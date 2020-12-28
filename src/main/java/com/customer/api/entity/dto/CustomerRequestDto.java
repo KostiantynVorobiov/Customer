@@ -1,11 +1,16 @@
 package com.customer.api.entity.dto;
 
-import lombok.Builder;
+import com.customer.api.validator.ValidEmail;
+import com.customer.api.validator.ValidName;
+import com.customer.api.validator.ValidPhoneNumber;
 import lombok.Data;
 
 @Data
 public class CustomerRequestDto {
-    private String full_name;
+    @ValidName
+    private String fullName;
+    @ValidEmail
     private String email;
+    @ValidPhoneNumber
     private String phone;
 }
