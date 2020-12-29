@@ -5,6 +5,7 @@ import com.customer.api.entity.dto.CustomerUpdateRequestDto;
 import com.customer.api.exception.DataProcessingException;
 import com.customer.api.repository.CustomerRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,17 +35,30 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new DataProcessingException("Can't find customer by id: " + id));
+        Optional<Customer> customer = repository.findById(id);
+        if (customer.isEmpty()) {
+            throw new DataProcessingException("There are no such customer with id: "
+                    + id + " in DB");
+        }
+        if (customer.get().isDeleted()) {
+            throw new DataProcessingException("Customer with id: " + id + " is deleted");
+        }
+        return customer.get();
     }
 
     @Override
-    public Customer update(CustomerUpdateRequestDto customerUpdateRequestDto) {
-        Customer customer = getById(customerUpdateRequestDto.getId());
-        customer.setFullName(customerUpdateRequestDto.getFullName());
-        customer.setPhone(customerUpdateRequestDto.getPhone());
-        customer.setUpdated(System.currentTimeMillis());
-        return repository.save(customer);
+    public Customer update(Long id, CustomerUpdateRequestDto customerUpdateRequestDto) {
+        if (id.equals(customerUpdateRequestDto.getId())) {
+            Customer customer = getById(id);
+            customer.setId(customerUpdateRequestDto.getId());
+            customer.setFullName(customerUpdateRequestDto.getFullName());
+            customer.setPhone(customerUpdateRequestDto.getPhone());
+            customer.setUpdated(System.currentTimeMillis());
+            return repository.save(customer);
+        }
+        throw new DataProcessingException("You can't update customer with id: "
+                + id + ", id in url and in body must be equals");
+
     }
 
     @Override

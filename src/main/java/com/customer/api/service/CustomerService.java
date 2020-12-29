@@ -11,7 +11,7 @@ public interface CustomerService {
 
     Customer getById(Long id);
 
-    Customer update(CustomerUpdateRequestDto customerUpdateRequestDto);
+    Customer update(Long id, CustomerUpdateRequestDto customerUpdateRequestDto);
 
     void delete(Long id);
 

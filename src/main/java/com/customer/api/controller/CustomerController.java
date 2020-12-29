@@ -9,6 +9,7 @@ import com.customer.api.service.mapper.CustomerMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ public class CustomerController {
     private final CustomerService service;
     private final CustomerMapper mapper;
 
+    @Autowired
     public CustomerController(CustomerService service, CustomerMapper mapper) {
         this.service = service;
         this.mapper = mapper;
@@ -53,7 +55,7 @@ public class CustomerController {
     public CustomerResponseDto update(@Valid @PathVariable Long id,
                                        @RequestBody CustomerUpdateRequestDto
                                                customerUpdateRequestDto) {
-        Customer customer = service.update(customerUpdateRequestDto);
+        Customer customer = service.update(id, customerUpdateRequestDto);
         return mapper.mapToDto(customer);
     }
 
